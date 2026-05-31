@@ -1,0 +1,9 @@
+node_modules/
+.next/
+.env
+.env.local
+__pycache__/
+*.pyc
+voice_assistant/__pycache__/
+
+voice_assistant/output.log

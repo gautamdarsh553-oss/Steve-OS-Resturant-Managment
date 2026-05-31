@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Steve — Restaurant Resource Management System</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/style.css">
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+  <!-- ==================== AUTH SCREEN (shown before main app) ==================== -->
+  <div id="auth-screen" class="auth-screen">
+    <div class="auth-container">
+      <!-- Brand -->
+      <div class="auth-brand">
+        <span class="brand-icon">✨</span>
+        <span class="brand-name">Steve OS</span>
+        <p class="auth-subtitle">Restaurant Resource Management</p>
+      </div>
+
+      <!-- LOGIN FORM -->
+      <div id="auth-login-form" class="auth-form active">
+        <h2 class="auth-title">Sign In</h2>
+        <p class="auth-desc">Enter your credentials to continue</p>
+        <div id="auth-login-error" class="auth-error" style="display:none;"></div>
+        <div class="form-group">
+          <label for="auth-username">Username</label>
+          <input type="text" id="auth-username" class="form-control" placeholder="Enter username" autocomplete="username" required>
+        </div>
+        <div class="form-group">
+          <label for="auth-password">Password</label>
+          <input type="password" id="auth-password" class="form-control" placeholder="Enter password" autocomplete="current-password" required>
+        </div>
+        <div id="auth-rate-limit-msg" class="auth-error" style="display:none;"></div>
+        <button class="btn btn-primary auth-btn" id="auth-login-btn">Sign In</button>
+        <div class="auth-links">
+          <a href="#" id="auth-forgot-link">Forgot Password?</a>
+          <a href="#" id="auth-register-link">Create Account</a>
+        </div>
+      </div>
+
+      <!-- OTP VERIFICATION FORM (used for registration verification only) -->
+      <div id="auth-otp-form" class="auth-form">
+        <h2 class="auth-title">Verify Email</h2>
+        <p class="auth-desc">A verification code has been sent to <span id="auth-otp-email-display"></span></p>
+        <div id="auth-otp-error" class="auth-error" style="display:none;"></div>
+        <div class="form-group">
+          <label for="auth-otp-input">Enter 6-digit OTP</label>
+          <input type="text" id="auth-otp-input" class="form-control" placeholder="000000" maxlength="6" inputmode="numeric" pattern="[0-9]{6}" required>
+        </div>
+        <button class="btn btn-primary auth-btn" id="auth-verify-otp-btn">Verify OTP</button>
+        <div class="auth-links">
+          <a href="#" id="auth-back-login-link">Back to Login</a>
+        </div>
+      </div>
+
+      <!-- FORGOT PASSWORD FORM -->
+      <div id="auth-forgot-form" class="auth-form">
+        <h2 class="auth-title">Reset Password</h2>
+        <p class="auth-desc">Enter your registered email to receive an OTP</p>
+        <div id="auth-forgot-error" class="auth-error" style="display:none;"></div>
+        <div id="auth-forgot-success" class="auth-success" style="display:none;"></div>
+        <div class="form-group">
+          <label for="auth-forgot-email">Email Address</label>
+          <input type="email" id="auth-forgot-email" class="form-control" placeholder="you@example.com" required>
+        </div>
+        <button class="btn btn-primary auth-btn" id="auth-send-otp-btn">Send OTP</button>
+        <div class="auth-links">
+          <a href="#" id="auth-back-login-from-forgot">Back to Login</a>
+        </div>
+      </div>
+
+      <!-- RESET PASSWORD FORM -->
+      <div id="auth-reset-form" class="auth-form">
+        <h2 class="auth-title">Set New Password</h2>
+        <p class="auth-desc">OTP verified. Choose a new password.</p>
+        <div id="auth-reset-error" class="auth-error" style="display:none;"></div>
+        <div class="form-group">
+          <label for="auth-reset-otp">OTP Code</label>
+          <input type="text" id="auth-reset-otp" class="form-control" placeholder="000000" maxlength="6" required>
+        </div>
+        <div class="form-group">
+          <label for="auth-reset-new-password">New Password</label>
+          <input type="password" id="auth-reset-new-password" class="form-control" placeholder="At least 6 characters" minlength="6" required>
+        </div>
+        <div class="form-group">
+          <label for="auth-reset-confirm-password">Confirm Password</label>
+          <input type="password" id="auth-reset-confirm-password" class="form-control" placeholder="Repeat new password" required>
+        </div>
+        <button class="btn btn-primary auth-btn" id="auth-reset-btn">Reset Password</button>
+        <div class="auth-links">
+          <a href="#" id="auth-back-login-from-reset">Back to Login</a>
+        </div>
+      </div>
+
+      <!-- REGISTER FORM -->
+      <div id="auth-register-form" class="auth-form">
+        <h2 class="auth-title">Create Account</h2>
+        <p class="auth-desc">Register a new staff account</p>
+        <div id="auth-register-error" class="auth-error" style="display:none;"></div>
+        <div id="auth-register-success" class="auth-success" style="display:none;"></div>
+        <div class="form-group">
+          <label for="auth-reg-username">Username</label>
+          <input type="text" id="auth-reg-username" class="form-control" placeholder="Choose a username" required>
+        </div>
+        <div class="form-group">
+          <label for="auth-reg-email">Email</label>
+          <input type="email" id="auth-reg-email" class="form-control" placeholder="you@example.com" required>
+        </div>
+        <div class="form-group">
+          <label for="auth-reg-password">Password</label>
+          <input type="password" id="auth-reg-password" class="form-control" placeholder="At least 6 characters" minlength="6" required>
+        </div>
+        <button class="btn btn-primary auth-btn" id="auth-register-btn">Create Account</button>
+        <div class="auth-links">
+          <a href="#" id="auth-back-login-from-register">Already have an account? Sign In</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sidebar Navigation -->
+  <aside id="app-sidebar">
+    <div class="sidebar-header">
+      <div class="brand">
+        <span class="brand-icon">✨</span>
+        <span class="brand-name">Steve OS</span>
+      </div>
+      <button class="sidebar-collapse-btn" id="sidebar-toggle">
+        <i data-lucide="chevrons-left"></i>
+      </button>
+    </div>
+    
+    <nav class="sidebar-menu">
+      <a class="menu-item active" href="#" data-view="dashboard">
+        <i data-lucide="layout-dashboard"></i>
+        <span class="menu-text">Dashboard</span>
+      </a>
+      <a class="menu-item" href="#" data-view="orders">
+        <i data-lucide="clipboard-list"></i>
+        <span class="menu-text">Live Orders</span>
+      </a>
+      <a class="menu-item" href="#" data-view="inventory">
+        <i data-lucide="package"></i>
+        <span class="menu-text">Inventory Management</span>
+      </a>
+      <a class="menu-item" href="#" data-view="db-editor">
+        <i data-lucide="database"></i>
+        <span class="menu-text">Database Editor</span>
+      </a>
+      <a class="menu-item" href="#" data-view="employees">
+        <i data-lucide="users"></i>
+        <span class="menu-text">Employees</span>
+      </a>
+      <a class="menu-item" href="#" data-view="attendance">
+        <i data-lucide="calendar-check"></i>
+        <span class="menu-text">Attendance</span>
+      </a>
+      <a class="menu-item" href="#" data-view="salaries">
+        <i data-lucide="wallet"></i>
+        <span class="menu-text">Salaries</span>
+      </a>
+      <a class="menu-item" href="#" data-view="analytics">
+        <i data-lucide="bar-chart-3"></i>
+        <span class="menu-text">Analytics</span>
+      </a>
+      <a class="menu-item" href="#" data-view="sales-reports">
+        <i data-lucide="trending-up"></i>
+        <span class="menu-text">Sales Reports</span>
+      </a>
+      <a class="menu-item" href="#" data-view="profit-reports">
+        <i data-lucide="dollar-sign"></i>
+        <span class="menu-text">Profit Reports</span>
+      </a>
+
+      <a class="menu-item" href="#" data-view="notifications">
+        <i data-lucide="bell"></i>
+        <span class="menu-text">Notifications & Alerts</span>
+      </a>
+      <a class="menu-item" href="#" data-view="raw-materials">
+        <i data-lucide="boxes"></i>
+        <span class="menu-text">Raw Materials</span>
+      </a>
+      <a class="menu-item" href="#" data-view="recipes">
+        <i data-lucide="book-open"></i>
+        <span class="menu-text">Recipes</span>
+      </a>
+      <a class="menu-item" href="#" data-view="suppliers">
+        <i data-lucide="truck"></i>
+        <span class="menu-text">Suppliers</span>
+      </a>
+      <a class="menu-item" href="#" data-view="session-log">
+        <i data-lucide="clock"></i>
+        <span class="menu-text">Session Log</span>
+      </a>
+      <a class="menu-item" href="#" data-view="monthly-summary">
+        <i data-lucide="file-text"></i>
+        <span class="menu-text">Monthly Summary</span>
+      </a>
+      <a class="menu-item" href="#" data-view="settings">
+        <i data-lucide="settings"></i>
+        <span class="menu-text">Settings</span>
+      </a>
+    </nav>
+  </aside>
+
+  <!-- Right Dashboard Body -->
+  <main>
+    <header>
+      <div class="header-left">
+        <h1 class="page-title" id="current-view-title">Dashboard</h1>
+      </div>
+      <div class="header-right">
+        <!-- Role Selector Switch -->
+        <div class="role-badge" id="role-select-trigger">
+          <i data-lucide="shield"></i>
+          <span id="header-role-label">Admin</span>
+        </div>
+
+        <!-- Session Controls -->
+        <div class="session-controls" style="display:flex;align-items:center;gap:6px;margin-right:8px;">
+          <span id="session-status-badge" class="badge badge-completed" style="font-size:0.7rem;">Stopped</span>
+          <button class="theme-toggle-btn" id="session-start-btn" title="Start Session" style="color:var(--success-color);">
+            <i data-lucide="play"></i>
+          </button>
+          <button class="theme-toggle-btn" id="session-stop-btn" title="Stop Session" style="color:var(--danger-color);">
+            <i data-lucide="square"></i>
+          </button>
+        </div>
+
+        <!-- Theme Toggle -->
+        <button class="theme-toggle-btn" id="theme-toggle">
+          <i data-lucide="moon"></i>
+        </button>
+
+        <!-- Logout Button -->
+        <button class="theme-toggle-btn" id="logout-btn" title="Sign Out">
+          <i data-lucide="log-out"></i>
+        </button>
+      </div>
+    </header>
+
+    <div class="content-area">
+
+      <!-- ==================== VIEW: DASHBOARD ==================== -->
+      <section class="view-section active" id="view-dashboard">
+        <!-- Dashboard Stats Grid -->
+        <div class="grid-dashboard">
+          <div class="stats-card">
+            <div class="stats-info">
+              <span class="stats-label">Today's Sales</span>
+              <span class="stats-value" id="dash-sales-val">$0.00</span>
+              <span class="stats-trend" id="dash-sales-trend"></span>
+            </div>
+            <div class="stats-icon icon-blue">
+              <i data-lucide="dollar-sign"></i>
+            </div>
+          </div>
+          <div class="stats-card">
+            <div class="stats-info">
+              <span class="stats-label">Net Profit Today</span>
+              <span class="stats-value" id="dash-profit-val">$0.00</span>
+              <span class="stats-trend" id="dash-profit-trend"></span>
+            </div>
+            <div class="stats-icon icon-green">
+              <i data-lucide="piggy-bank"></i>
+            </div>
+          </div>
+          <div class="stats-card">
+            <div class="stats-info">
+              <span class="stats-label">Active Orders</span>
+              <span class="stats-value" id="dash-orders-val">0</span>
+              <span class="stats-trend text-secondary">Kitchen workload</span>
+            </div>
+            <div class="stats-icon icon-orange">
+              <i data-lucide="activity"></i>
+            </div>
+          </div>
+          <div class="stats-card">
+            <div class="stats-info">
+              <span class="stats-label">Low Stock Alerts</span>
+              <span class="stats-value" id="dash-alerts-val">0</span>
+              <span class="stats-trend trend-down" id="dash-alerts-trend"><i data-lucide="alert-triangle"></i> Action required</span>
+            </div>
+            <div class="stats-icon icon-red">
+              <i data-lucide="alert-octagon"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-dashboard" style="margin-top: 20px;">
+          <div class="stats-card" style="border-left: 4px solid #6366F1;">
+            <div class="stats-info">
+              <span class="stats-label">Total Revenue (All Shifts)</span>
+              <span class="stats-value" id="dash-total-revenue-val">$0.00</span>
+              <span class="stats-trend" style="color:var(--text-muted);">Lifetime across all shifts</span>
+            </div>
+            <div class="stats-icon icon-purple">
+              <i data-lucide="trending-up"></i>
+            </div>
+          </div>
+          <div class="stats-card" style="border-left: 4px solid #10B981;">
+            <div class="stats-info">
+              <span class="stats-label">Total Profit (All Shifts)</span>
+              <span class="stats-value" id="dash-total-profit-val">$0.00</span>
+              <span class="stats-trend" style="color:var(--text-muted);">Lifetime across all shifts</span>
+            </div>
+            <div class="stats-icon icon-green">
+              <i data-lucide="bar-chart-3"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="dashboard-columns">
+          <!-- Revenue Line Chart -->
+          <div class="card-panel">
+            <div class="card-header">
+              <h3 class="card-title">Sales Analytics Overview</h3>
+              <div style="font-size: 0.8rem; color: var(--text-muted);">Real-time performance</div>
+            </div>
+            <div class="chart-container">
+              <canvas id="dashboard-sales-chart"></canvas>
+            </div>
+          </div>
+
+          <!-- Business Insights & AI Advice -->
+          <div class="card-panel" style="display: flex; flex-direction: column; gap: 20px;">
+            <h3 class="card-title">🤖 AI Business Insights</h3>
+            <div class="bullet-list" id="dash-ai-insights-list">
+              <!-- Dynamically rendered -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Grid with Secondary Cards -->
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+          <!-- Top Selling items -->
+          <div class="card-panel">
+            <h3 class="card-title" style="margin-bottom:15px;">🔥 Top Selling Items Today</h3>
+            <div class="table-responsive">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Item</th>
+                    <th>Volume Sold</th>
+                  </tr>
+                </thead>
+                <tbody id="dash-top-items-tbody">
+                  <!-- Dynamically rendered -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <!-- Staff summary card -->
+          <div class="card-panel">
+            <h3 class="card-title" style="margin-bottom:15px;">👥 Employee Attendance & Workload</h3>
+            <div class="bullet-list" style="gap:14px;">
+              <div class="bullet-item">
+                <span class="bullet-text">Today's Staff Present</span>
+                <span id="dash-staff-summary" class="badge badge-completed">0 Present</span>
+              </div>
+              <div class="bullet-item">
+                <span class="bullet-text">Inventory Status</span>
+                <span id="dash-inventory-health" class="badge badge-completed">100% Healthy</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== VIEW: LIVE ORDERS ==================== -->
+      <section class="view-section" id="view-orders">
+        <div style="display:grid; grid-template-columns: 1.5fr 1fr; gap:24px;">
+          <!-- Orders Panel -->
+          <div class="card-panel">
+            <div class="card-header" style="margin-bottom: 24px;">
+              <h3 class="card-title">Live Kitchen Board</h3>
+              <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <button class="btn btn-secondary active order-filter-btn" data-filter="all">All Orders</button>
+                <button class="btn btn-secondary order-filter-btn" data-filter="pending">Pending</button>
+                <button class="btn btn-secondary order-filter-btn" data-filter="cooking">Cooking</button>
+                <button class="btn btn-secondary order-filter-btn" data-filter="completed">Completed</button>
+              </div>
+            </div>
+            <div class="orders-grid" id="orders-cards-container">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+          <!-- Steve AI Assistant Panel -->
+          <div class="card-panel" style="display:flex; flex-direction:column; max-height:600px;">
+            <div class="card-header" style="margin-bottom:12px;">
+              <h3 class="card-title">✨ Steve AI Assistant</h3>
+            </div>
+            <div style="flex:1; overflow-y:auto; margin-bottom:12px; padding:8px; border:1px solid var(--border-color); border-radius:8px; min-height:300px; display:flex; flex-direction:column; gap:8px;" id="orders-steve-logs">
+              <div style="color:var(--text-muted); font-size:0.85rem; text-align:center; padding:20px;">Ask Steve to handle orders, check stock, or manage staff.</div>
+            </div>
+            <div style="display:flex; gap:8px;">
+              <input type="text" id="orders-steve-input" class="form-control" placeholder="e.g. Order 2 burgers for table 5..." style="flex:1;">
+              <button class="btn btn-primary" id="orders-steve-send">Send</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== VIEW: INVENTORY ==================== -->
+      <section class="view-section" id="view-inventory">
+        <div class="card-panel">
+          <div class="card-header" style="margin-bottom: 24px;">
+            <h3 class="card-title">Inventory Forecast Registers</h3>
+            <button class="btn btn-primary" id="open-daily-stock-btn"><i data-lucide="clipboard-check"></i> Initial daily stock check</button>
+          </div>
+          
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>Ingredient</th>
+                  <th>Remaining Levels</th>
+                  <th>Safety Threshold</th>
+                  <th>Depletion Forecast</th>
+                  <th>Status</th>
+                  <th>Restock Advice</th>
+                </tr>
+              </thead>
+              <tbody id="inventory-tbody">
+                <!-- Loaded dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== VIEW: DATABASE EDITOR ==================== -->
+      <section class="view-section" id="view-db-editor">
+        <div class="card-panel">
+          <div class="card-header" style="margin-bottom: 24px;">
+            <h3 class="card-title">Worker Database Registry</h3>
+            <button class="btn btn-primary" id="open-add-item-modal-btn"><i data-lucide="plus"></i> Add item</button>
+          </div>
+          
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>Photo</th>
+                  <th>Name</th>
+                  <th>Category</th>
+                  <th>Selling Price</th>
+                  <th>Prep Time</th>
+                  <th>Profit Margin</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="db-editor-tbody">
+                <!-- Dynamic items -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== VIEW: EMPLOYEES ==================== -->
+      <section class="view-section" id="view-employees">
+        <div class="card-panel">
+          <div class="card-header" style="margin-bottom: 24px;">
+            <h3 class="card-title">Staff Directory</h3>
+            <button class="btn btn-primary" id="open-add-employee-modal-btn"><i data-lucide="user-plus"></i> Add staff</button>
+          </div>
+
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>Employee</th>
+                  <th>Role</th>
+                  <th>Hourly Rate</th>
+                  <th>Shift Pattern</th>
+                  <th>Work Efficiency</th>
+                  <th>Daily Task Summary</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="employees-tbody">
+                <!-- Dynamically loaded -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== VIEW: ATTENDANCE ==================== -->
+      <section class="view-section" id="view-attendance">
+        <div style="display:grid; grid-template-columns: 2fr 1.2fr; gap:24px;">
+          <!-- Attendance records -->
+          <div class="card-panel">
+            <h3 class="card-title" style="margin-bottom:20px;">Daily Attendance Logs</h3>
+            <div class="table-responsive">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Employee Name</th>
+                    <th>Designated Shift</th>
+                    <th>Attendance Status</th>
+                    <th>Clock In</th>
+                    <th>Clock Out</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="attendance-tbody">
+                  <!-- Dynamic rows -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+          
+          <!-- Mock QR / Biometric triggers -->
+          <div class="card-panel" style="display:flex; flex-direction:column; gap:16px;">
+            <h3 class="card-title">Biometric Integration Scanner</h3>
+            <p style="font-size:0.85rem; color:var(--text-secondary);">Simulates hardware inputs like a QR card swipe or fingerprint sensor.</p>
+            <div class="form-group">
+              <label for="biometric-employee-select">Select Employee</label>
+              <select id="biometric-employee-select" class="form-control">
+                <!-- Loaded dynamically -->
+              </select>
+            </div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+              <button class="btn btn-primary" id="biometric-clockin-btn">Simulate Clock-In</button>
+              <button class="btn btn-secondary" id="biometric-clockout-btn">Simulate Clock-Out</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== VIEW: SALARIES ==================== -->
+      <section class="view-section" id="view-salaries">
+        <div class="card-panel">
+          <div class="card-header" style="margin-bottom:20px;">
+            <h3 class="card-title">Payroll Report Sheets</h3>
+            <button class="btn btn-primary" id="process-salaries-btn"><i data-lucide="check-square"></i> Process Salaries</button>
+          </div>
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>Employee</th>
+                  <th>Hourly Base</th>
+                  <th>Hours Worked</th>
+                  <th>Overtime</th>
+                  <th>P/A Days</th>
+                  <th>Base Pay ($)</th>
+                  <th>Overtime Pay ($)</th>
+                  <th>Total Payout ($)</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="salaries-tbody">
+                <!-- Dynamic data -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== VIEW: ANALYTICS ==================== -->
+      <section class="view-section" id="view-analytics">
+        <div class="card-panel">
+          <div class="card-header" style="margin-bottom: 24px;">
+            <h3 class="card-title">Advanced Performance Analysis</h3>
+            <div style="display:flex; gap:8px;">
+              <button class="btn btn-secondary period-filter-btn" data-period="today">Today</button>
+              <button class="btn btn-secondary period-filter-btn" data-period="yesterday">Yesterday</button>
+              <button class="btn btn-secondary period-filter-btn" data-period="3days">Last 3 days</button>
+              <button class="btn btn-secondary active period-filter-btn" data-period="1month">Last Month</button>
+              <button class="btn btn-secondary period-filter-btn" data-period="3months">Last 3 Months</button>
+              <button class="btn btn-secondary period-filter-btn" data-period="1year">Last Year</button>
+            </div>
+          </div>
+          
+          <div class="chart-container" style="height: 380px; margin-bottom: 24px;">
+            <canvas id="analytics-sales-chart"></canvas>
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px;">
+            <div class="stats-card">
+              <div class="stats-info">
+                <span class="stats-label">Net Lifetime Sales</span>
+                <span class="stats-value" id="stats-total-rev">$0.00</span>
+              </div>
+              <div class="stats-icon icon-blue"><i data-lucide="dollar-sign"></i></div>
+            </div>
+            <div class="stats-card">
+              <div class="stats-info">
+                <span class="stats-label">Net Lifetime Profit</span>
+                <span class="stats-value" id="stats-total-prof">$0.00</span>
+              </div>
+              <div class="stats-icon icon-green"><i data-lucide="piggy-bank"></i></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== VIEW: SALES REPORTS ==================== -->
+      <section class="view-section" id="view-sales-reports">
+        <div class="card-panel">
+          <div class="card-header" style="margin-bottom: 20px;">
+            <h3 class="card-title">Daily Sales Records</h3>
+            <button class="btn btn-primary" id="export-sales-csv-btn"><i data-lucide="download"></i> Download CSV Sheet</button>
+          </div>
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Orders Handled</th>
+                  <th>Revenue ($)</th>
+                  <th>Cost of Sales ($)</th>
+                  <th>Gross Profit ($)</th>
+                </tr>
+              </thead>
+              <tbody id="sales-reports-tbody">
+                <!-- Dynamically loaded -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card-panel" style="margin-top: 24px;">
+          <div class="card-header" style="margin-bottom: 20px;">
+            <h3 class="card-title">Archived Shift History</h3>
+            <span style="font-size:0.8rem;color:var(--text-muted);">Previous shift summaries preserved on shift end</span>
+          </div>
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>Shift Ended</th>
+                  <th>Date</th>
+                  <th>Orders</th>
+                  <th>Revenue ($)</th>
+                  <th>Cost ($)</th>
+                  <th>Profit ($)</th>
+                </tr>
+              </thead>
+              <tbody id="shift-history-tbody">
+                <tr><td colspan="6" style="text-align:center;color:var(--text-muted);">No archived shifts yet.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== VIEW: PROFIT REPORTS ==================== -->
+      <section class="view-section" id="view-profit-reports">
+        <div class="card-panel">
+          <div class="card-header" style="margin-bottom: 20px;">
+            <h3 class="card-title">Net Profit Statements</h3>
+            <button class="btn btn-primary" id="export-profit-csv-btn"><i data-lucide="download"></i> Export Statement (CSV)</button>
+          </div>
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>Category Group</th>
+                  <th>Account Description</th>
+                  <th>Lifetime Sum ($)</th>
+                </tr>
+              </thead>
+              <tbody id="profit-reports-tbody">
+                <!-- Dynamically loaded -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+
+
+      <!-- ==================== VIEW: NOTIFICATIONS ==================== -->
+      <section class="view-section" id="view-notifications">
+        <div class="card-panel">
+          <div class="card-header" style="margin-bottom: 20px;">
+            <h3 class="card-title">Live System Alerts & Notifications</h3>
+            <button class="btn btn-secondary" id="clear-notifications-btn">Clear All</button>
+          </div>
+          <div class="bullet-list" id="notifications-list">
+            <!-- Loaded dynamically -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== VIEW: RAW MATERIALS ==================== -->
+      <section class="view-section" id="view-raw-materials">
+        <div class="card-panel">
+          <div class="card-header" style="margin-bottom:20px;">
+            <h3 class="card-title">Raw Ingredient Unit Costs</h3>
+            <button class="btn btn-primary" id="add-raw-material-btn"><i data-lucide="plus"></i> Add Material</button>
+          </div>
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>Material Code</th>
+                  <th>Name</th>
+                  <th>Storage Type</th>
+                  <th>Measurement Unit</th>
+                  <th>Est Cost Per Unit ($)</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="raw-materials-tbody">
+                <!-- Loaded dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== VIEW: RECIPES ==================== -->
+      <section class="view-section" id="view-recipes">
+          <div class="card-panel">
+            <div class="card-header" style="margin-bottom:20px;">
+              <h3 class="card-title">Recipe Formulation Registers</h3>
+            </div>
+            <div class="bullet-list" id="recipes-accordion-list" style="gap:16px;">
+              <!-- Loaded dynamically -->
+            </div>
+          </div>
+      </section>
+
+      <!-- ==================== VIEW: SUPPLIERS ==================== -->
+      <section class="view-section" id="view-suppliers">
+        <div class="card-panel">
+          <h3 class="card-title" style="margin-bottom:20px;">Supplier Registers</h3>
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>Supplier Name</th>
+                  <th>Contact Details</th>
+                  <th>Materials Provided</th>
+                  <th>Active Payment Terms</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="suppliers-tbody">
+                <!-- Dynamic rows -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== VIEW: SESSION LOG ==================== -->
+      <section class="view-section" id="view-session-log">
+        <div class="card-panel" style="max-width: 700px;">
+          <h3 class="card-title" style="margin-bottom:20px;">📋 Session Activity Log</h3>
+          <div class="bullet-list" id="session-log-list" style="gap:8px;">
+            <!-- Loaded dynamically -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== VIEW: MONTHLY SUMMARY ==================== -->
+      <section class="view-section" id="view-monthly-summary">
+        <div class="card-panel" style="max-width: 600px; margin: 0 auto; text-align: center; display:flex; flex-direction:column; gap:20px; padding:40px;">
+          <div style="font-size:3rem;">📊</div>
+          <h2 class="font-heading">Monthly Operating Statement Summary</h2>
+          <p style="color:var(--text-secondary); font-size:0.95rem;">
+            Summarizes current billing statistics, raw material procurement estimates, and staff payouts to report net profitability.
+          </p>
+          <div class="bullet-list" style="text-align:left; border:1px solid var(--border-color); border-radius:12px; padding:20px;">
+            <div class="bullet-item">
+              <span class="bullet-text">Active Revenue Volume</span>
+              <span id="monthly-summary-sales" style="font-weight:700;">$0.00</span>
+            </div>
+            <div class="bullet-item">
+              <span class="bullet-text">Ingredients Expenses</span>
+              <span id="monthly-summary-cost" style="font-weight:700;">$0.00</span>
+            </div>
+            <div class="bullet-item">
+              <span class="bullet-text">Salaries Expense</span>
+              <span id="monthly-summary-salaries" style="font-weight:700;">$0.00</span>
+            </div>
+            <div class="bullet-item">
+              <span class="bullet-text" style="font-weight:600;">Net Profit</span>
+              <span id="monthly-summary-net" class="badge badge-completed">$0.00</span>
+            </div>
+          </div>
+          <div style="display:flex; justify-content:center; gap:12px;">
+            <button class="btn btn-primary" id="download-summary-pdf"><i data-lucide="file-text"></i> Export PDF Statement</button>
+            <button class="btn btn-secondary" id="download-summary-excel"><i data-lucide="download"></i> Download CSV Spreadsheet</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== VIEW: SETTINGS ==================== -->
+      <section class="view-section" id="view-settings">
+        <div class="card-panel" style="max-width:650px;">
+          <h3 class="card-title" style="margin-bottom: 24px;">Global System Parameters</h3>
+          
+          <div class="bullet-list" style="gap:20px;">
+            <div class="bullet-item" style="padding:16px;">
+              <div class="switch-container">
+                <span class="bullet-text" style="font-weight:600;">High-contrast Dark Dashboard Theme</span>
+                <label class="switch">
+                  <input type="checkbox" id="settings-dark-theme-toggle">
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="bullet-item" style="padding:16px;">
+              <div>
+                <span class="bullet-text" style="font-weight:600; display:block; margin-bottom:4px;">Multi-language UI Interface</span>
+                <span style="font-size:0.8rem; color:var(--text-secondary);">Currently active translation schema.</span>
+              </div>
+              <select class="form-control" style="width:180px;">
+                <option value="en" selected>English (US)</option>
+                <option value="es">Español</option>
+                <option value="fr">Français</option>
+                <option value="hi">हिन्दी</option>
+              </select>
+            </div>
+
+            <div class="bullet-item" style="padding:16px;">
+              <div style="flex:1;">
+                <span class="bullet-text" style="font-weight:600; display:block; margin-bottom:4px;">Python Voice Assistant</span>
+                <span style="font-size:0.8rem; color:var(--text-secondary);">Desktop voice control — supports attendance, orders, stock, sales.</span>
+              </div>
+              <div style="display:flex; gap:8px;">
+                <button class="btn btn-primary" id="launch-voice-assistant-btn" style="white-space:nowrap;">
+                  <i data-lucide="mic"></i> Launch Assistant
+                </button>
+                <span class="badge badge-completed" id="voice-assistant-status" style="align-self:center;">Ready</span>
+              </div>
+            </div>
+            
+            <div class="bullet-item" style="padding:16px;">
+              <div>
+                <span class="bullet-text" style="font-weight:600; display:block; margin-bottom:4px;">Automatic Cloud Database Backups</span>
+                <span style="font-size:0.8rem; color:var(--text-secondary);">Automatically backups storage arrays daily.</span>
+              </div>
+              <span class="badge badge-completed">Enabled</span>
+            </div>
+
+            <div class="bullet-item" style="padding:16px; flex-direction:column; align-items:flex-start; gap:12px;">
+              <span class="bullet-text" style="font-weight:600; color:var(--danger-color);">Danger Zone</span>
+              <p style="font-size:0.8rem; color:var(--text-secondary);">
+                Resetting deletes custom records, menu overrides, employee files, and settings back to factory default logs.
+              </p>
+              <button class="btn btn-danger" id="factory-reset-btn"><i data-lucide="trash-2"></i> Wipe & Reset Local Database</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ==================== MODAL: INITIAL DAILY STOCK CHECK-IN ==================== -->
+  <div class="modal-overlay" id="modal-daily-stock">
+    <div class="modal-box">
+      <h2 class="modal-title">Morning Roster Stock Check-In</h2>
+      <p style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:20px;">
+        Please input initial raw material stock volumes for the starting shift. Deductions are calculated automatically from this baseline.
+      </p>
+      <form id="daily-stock-form">
+        <div id="daily-stock-inputs-container" style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:24px;">
+          <!-- Loaded dynamically -->
+        </div>
+        <div style="display:flex; justify-content:flex-end; gap:12px;">
+          <button type="submit" class="btn btn-primary">Confirm & Start Shift</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL: ADD FOOD ITEM ==================== -->
+  <div class="modal-overlay" id="modal-add-item">
+    <div class="modal-box">
+      <h2 class="modal-title" id="item-modal-title">Add Database Menu Item</h2>
+      <form id="add-item-form">
+        <input type="hidden" id="item-edit-id">
+        <div class="grid-cols-2">
+          <div class="form-group">
+            <label for="item-name">Food Name</label>
+            <input type="text" id="item-name" class="form-control" required placeholder="e.g. Cheese Sticks">
+          </div>
+          <div class="form-group">
+            <label for="item-category">Category</label>
+            <select id="item-category" class="form-control">
+              <option value="Burgers">Burgers</option>
+              <option value="Pizzas">Pizzas</option>
+              <option value="Sides">Sides</option>
+              <option value="Drinks">Drinks</option>
+              <option value="Sandwiches">Sandwiches</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="grid-cols-2">
+          <div class="form-group">
+            <label for="item-price">Selling Price ($)</label>
+            <input type="number" step="0.01" id="item-price" class="form-control" required placeholder="5.99">
+          </div>
+          <div class="form-group">
+            <label for="item-prep">Preparation Time (minutes)</label>
+            <input type="number" id="item-prep" class="form-control" required placeholder="8">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="item-icon">Food Emoji Representation</label>
+          <input type="text" id="item-icon" class="form-control" placeholder="🍔" required maxlength="2">
+        </div>
+
+        <div class="form-group">
+          <label for="item-instructions">Recipe Instructions</label>
+          <textarea id="item-instructions" class="form-control" style="height:80px; resize:none;" placeholder="Grill bread, melt cheese..."></textarea>
+        </div>
+
+        <!-- Recipe configuration -->
+        <h4 style="margin-top:16px; margin-bottom:8px; font-size:0.9rem;">Recipe Ingredients Composition</h4>
+        <div id="recipe-ingredients-inputs" style="display:flex; flex-direction:column; gap:8px; max-height:120px; overflow-y:auto; margin-bottom:20px; padding:4px; border:1px solid var(--border-color); border-radius:8px;">
+          <!-- Checkboxes and inputs loaded dynamically -->
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:12px;">
+          <button type="button" class="btn btn-secondary" id="close-add-item-modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Menu Item</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL: ADD EMPLOYEE ==================== -->
+  <div class="modal-overlay" id="modal-add-employee">
+    <div class="modal-box">
+      <h2 class="modal-title" id="emp-modal-title">Onboard New Employee</h2>
+      <form id="add-employee-form">
+        <input type="hidden" id="emp-edit-id">
+        <div class="form-group">
+          <label for="emp-name">Full Name</label>
+          <input type="text" id="emp-name" class="form-control" required placeholder="Aman Sharma">
+        </div>
+        
+        <div class="grid-cols-2">
+          <div class="form-group">
+            <label for="emp-role">Role Position</label>
+            <select id="emp-role" class="form-control" id="emp-role">
+              <option value="Chef">Chef</option>
+              <option value="Cashier">Cashier</option>
+              <option value="Inventory Staff">Inventory Staff</option>
+              <option value="Waiter">Waiter</option>
+              <option value="Kitchen Staff">Kitchen Staff</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="emp-rate">Hourly Rate ($)</label>
+            <input type="number" step="0.5" id="emp-rate" class="form-control" required placeholder="15.00">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="emp-shift">Shift Timings</label>
+          <select id="emp-shift" class="form-control">
+            <option value="08:00 - 16:00">Morning Shift (08:00 - 16:00)</option>
+            <option value="09:00 - 17:00">Day Shift (09:00 - 17:00)</option>
+            <option value="12:00 - 20:00">Evening Shift (12:00 - 20:00)</option>
+            <option value="16:00 - 00:00">Night Shift (16:00 - 00:00)</option>
+          </select>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:12px;">
+          <button type="button" class="btn btn-secondary" id="close-add-emp-modal">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="emp-save-btn">Save Employee</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL: EDIT SUPPLIER ==================== -->
+  <div class="modal-overlay" id="modal-edit-supplier">
+    <div class="modal-box" style="max-width:500px;">
+      <h2 class="modal-title">Edit Supplier</h2>
+      <form id="edit-supplier-form">
+        <input type="hidden" id="sup-edit-id">
+        <div class="form-group">
+          <label for="sup-name">Supplier Name</label>
+          <input type="text" id="sup-name" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label for="sup-contact">Contact Details</label>
+          <input type="text" id="sup-contact" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label for="sup-materials">Materials Provided</label>
+          <input type="text" id="sup-materials" class="form-control" required placeholder="e.g. Produce, Dairy, Meat">
+        </div>
+        <div class="form-group">
+          <label for="sup-terms">Payment Terms</label>
+          <input type="text" id="sup-terms" class="form-control" required placeholder="e.g. Net 30">
+        </div>
+        <div style="display:flex; justify-content:flex-end; gap:12px;">
+          <button type="button" class="btn btn-secondary" id="close-edit-supplier-modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Supplier</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL: EDIT SALARY ==================== -->
+  <div class="modal-overlay" id="modal-edit-salary">
+    <div class="modal-box" style="max-width:500px;">
+      <h2 class="modal-title" id="salary-modal-title">Edit Salary</h2>
+      <form id="edit-salary-form">
+        <input type="hidden" id="salary-edit-id">
+        <div class="form-group">
+          <label for="salary-employee-name">Employee</label>
+          <input type="text" id="salary-employee-name" class="form-control" disabled style="font-weight:600;">
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div class="form-group">
+            <label for="salary-hourly-rate">Hourly Rate ($)</label>
+            <input type="number" step="0.5" id="salary-hourly-rate" class="form-control" required min="0" placeholder="15.00">
+          </div>
+          <div class="form-group">
+            <label for="salary-overtime-hours">Overtime Hours</label>
+            <input type="number" step="0.5" id="salary-overtime-hours" class="form-control" min="0" placeholder="0">
+          </div>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px;">
+          <div class="form-group">
+            <label for="salary-present-days">Present Days</label>
+            <input type="number" id="salary-present-days" class="form-control" min="0" placeholder="0">
+          </div>
+          <div class="form-group">
+            <label for="salary-absent-days">Absent Days</label>
+            <input type="number" id="salary-absent-days" class="form-control" min="0" placeholder="0">
+          </div>
+          <div class="form-group">
+            <label for="salary-late-days">Late Days</label>
+            <input type="number" id="salary-late-days" class="form-control" min="0" placeholder="0">
+          </div>
+        </div>
+        <div style="display:flex; justify-content:flex-end; gap:12px;">
+          <button type="button" class="btn btn-secondary" id="close-edit-salary-modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Salary</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL: CHOOSE ROLE ACTIVE SIMULATOR ==================== -->
+  <div class="modal-overlay" id="modal-role-select">
+    <div class="modal-box" style="max-width:400px;">
+      <h2 class="modal-title">Simulate Login Profile</h2>
+      <p style="font-size:0.8rem; color:var(--text-secondary); margin-bottom:16px;">
+        Choose your active workspace profile roles. The UI menus will dynamically restrict content panels accordingly.
+      </p>
+      <div style="display:flex; flex-direction:column; gap:10px;" id="role-options-list">
+        <!-- Loaded dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== STEVE VOICE ASSISTANT WIDGET ==================== -->
+  <button class="steve-fab" id="steve-toggle-btn" title="Toggle Voice Assistant">
+    <span class="steve-fab-icon">✨</span>
+    <span class="steve-fab-pulse"></span>
+  </button>
+
+  <div class="steve-panel" id="steve-panel">
+    <div class="steve-panel-header">
+      <div class="steve-panel-title">
+        <span class="steve-avatar">✨</span>
+        <span>Steve Assistant</span>
+        <span class="steve-wake-indicator" id="steve-wake-indicator"></span>
+      </div>
+      <div class="steve-panel-actions">
+        <button class="steve-panel-btn" id="steve-minimize-btn" title="Minimize">−</button>
+        <button class="steve-panel-btn" id="steve-close-btn" title="Close">×</button>
+      </div>
+    </div>
+    <div class="steve-panel-body">
+      <div class="steve-status" id="steve-status">Initializing...</div>
+      <div class="steve-transcript" id="steve-transcript">(listening...)</div>
+      <div class="steve-response" id="steve-response"></div>
+      <div class="steve-logs-container" id="steve-logs-container"></div>
+    </div>
+    <div class="steve-panel-footer">
+      <input type="text" class="steve-text-input" id="steve-text-input" placeholder="Type a command...">
+      <button class="steve-send-btn" id="steve-send-btn">Send</button>
+    </div>
+  </div>
+
+  <!-- Core script modules -->
+  <script src="js/database.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/inventory.js"></script>
+  <script src="js/employees.js"></script>
+  <script src="js/analytics.js"></script>
+  <script src="js/ai-insights.js"></script>
+  <!-- Main app script -->
+  <script src="js/app.js"></script>
+  <!-- Steve Voice Assistant -->
+  <script src="js/voice.js"></script>
+</body>
+</html>
